@@ -1,0 +1,67 @@
+################################################################################
+# CONFIGURATION SW1 - Switch Distribution
+# MikroTik CRS328-24P-4S+
+################################################################################
+
+# Nom du switch
+/system identity set name=SW1
+
+# Configuration IP de management
+/interface vlan add name=vlan999-mgmt interface=bridge vlan-id=999
+/ip address add address=172.16.255.11/24 interface=vlan999-mgmt comment="Management IP"
+
+# Route par défaut via le routeur
+/ip route add dst-address=0.0.0.0/0 gateway=172.16.255.254
+
+# DNS
+/ip dns set servers=172.16.255.254
+
+# Créer un bridge pour tous les ports
+/interface bridge add name=bridge vlan-filtering=yes comment="Main Bridge"
+
+# Ajouter tous les ports au bridge
+/interface bridge port add bridge=bridge interface=ether1 comment="To RouterH4sh"
+/interface bridge port add bridge=bridge interface=ether2 comment="To LAN-H4sh1"
+/interface bridge port add bridge=bridge interface=ether3 comment="To LAN-H4sh2"
+
+# Définir les VLANs sur le bridge
+/interface bridge vlan add bridge=bridge vlan-ids=10 tagged=ether1,ether2,ether3 comment="VLAN 10 - LAN"
+/interface bridge vlan add bridge=bridge vlan-ids=20 tagged=ether1,ether2,ether3 comment="VLAN 20 - IT"
+/interface bridge vlan add bridge=bridge vlan-ids=30 tagged=ether1,ether2,ether3 comment="VLAN 30 - WiFi Emp"
+/interface bridge vlan add bridge=bridge vlan-ids=31 tagged=ether1,ether2,ether3 comment="VLAN 31 - WiFi Guest"
+/interface bridge vlan add bridge=bridge vlan-ids=100 tagged=ether1,ether2,ether3 comment="VLAN 100 - SOC"
+/interface bridge vlan add bridge=bridge vlan-ids=200 tagged=ether1,ether2,ether3 comment="VLAN 200 - DMZ-EXT"
+/interface bridge vlan add bridge=bridge vlan-ids=201 tagged=ether1,ether2,ether3 comment="VLAN 201 - DMZ-INT"
+/interface bridge vlan add bridge=bridge vlan-ids=999 tagged=ether1,ether2,ether3 comment="VLAN 999 - MGMT"
+
+# PVID pour le management
+/interface bridge port set [find interface=ether1] pvid=999
+/interface bridge port set [find interface=ether2] pvid=999
+/interface bridge port set [find interface=ether3] pvid=999
+
+# Protection BPDU
+/interface bridge port set [find bridge=bridge] bpdu-guard=yes
+
+# Storm control (limitation broadcast)
+/interface bridge port set [find bridge=bridge] broadcast-flood=no unknown-unicast-flood=no
+
+# Services
+/ip service set telnet disabled=yes
+/ip service set ssh disabled=no
+/ip service set winbox disabled=no
+
+# Créer utilisateur
+/user add name=admin-sw1 password=SecureP@ssw0rd! group=full
+
+################################################################################
+# VÉRIFICATIONS
+################################################################################
+
+# Vérifier le bridge
+# /interface bridge print
+# /interface bridge port print
+# /interface bridge vlan print
+
+# Tester connectivité
+# ping 172.16.255.254
+# ping 192.168.1.200
