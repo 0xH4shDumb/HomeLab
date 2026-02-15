@@ -39,20 +39,22 @@ set [ find default=yes ] supplicant-identity=MikroTik
 /port
 set 0 name=serial0
 /interface bridge port
-add bpdu-guard=yes bridge=bridge comment="To RouterH4sh" interface=ether1
-add bridge=bridge comment="To LAN-H4sh1" interface=ether2
-add bridge=bridge comment="To LAN-H4sh2" interface=ether3
+add bridge=bridge comment="Trunk to SW1" interface=ether24
+add bpdu-guard=yes bridge=bridge comment="PC1 - VLAN 10" interface=ether1 learn=yes pvid=10
+add bpdu-guard=yes bridge=bridge comment="PC2 - VLAN 10" interface=ether2 learn=yes pvid=10
+add bpdu-guard=yes bridge=bridge comment="AD Server - VLAN 201" interface=ether3 pvid=201
+add bpdu-guard=yes bridge=bridge comment="Wazuh - VLAN 100" interface=ether4 pvid=100
 /interface bridge vlan
-add bridge=bridge comment="VLAN 10 - LAN" tagged=ether1,ether2,ether3 vlan-ids=10
-add bridge=bridge comment="VLAN 20 - IT" tagged=ether1,ether2,ether3 vlan-ids=20
-add bridge=bridge comment="VLAN 30 - WiFi Emp" tagged=ether1,ether2,ether3 vlan-ids=30
-add bridge=bridge comment="VLAN 31 - WiFi Guest" tagged=ether1,ether2,ether3 vlan-ids=31
-add bridge=bridge comment="VLAN 100 - SOC" tagged=ether1,ether2,ether3 vlan-ids=100
-add bridge=bridge comment="VLAN 200 - DMZ-EXT" tagged=ether1,ether2,ether3 vlan-ids=200
-add bridge=bridge comment="VLAN 201 - DMZ-INT" tagged=ether1,ether2,ether3 vlan-ids=201
-add bridge=bridge comment="VLAN 999 - MGMT" tagged=bridge,ether1,ether2,ether3 vlan-ids=999
+add bridge=bridge comment="VLAN 10 - LAN" tagged=ether24 untagged=ether1 vlan-ids=10
+add bridge=bridge comment="VLAN 20 - IT" tagged=ether24 vlan-ids=20
+add bridge=bridge comment="VLAN 30 - WiFi Emp" tagged=ether24 vlan-ids=30
+add bridge=bridge comment="VLAN 31 - WiFi Guest" tagged=ether24 vlan-ids=31
+add bridge=bridge comment="VLAN 100 - SOC" tagged=ether24 untagged=ether4 vlan-ids=100
+add bridge=bridge comment="VLAN 200 - DMZ-EXT" tagged=ether24 vlan-ids=200
+add bridge=bridge comment="VLAN 201 - DMZ-INT" tagged=ether24 untagged=ether3 vlan-ids=201
+add bridge=bridge comment="VLAN 999 - MGMT" tagged=bridge,ether24 vlan-ids=999
 /ip address
-add address=172.16.255.11/24 interface=vlan999-mgmt network=172.16.255.0
+add address=172.16.255.12/24 interface=vlan999-mgmt network=172.16.255.0
 /ip dhcp-client
 # DHCP client can not run on slave or passthrough interface!
 add interface=ether1
@@ -63,4 +65,4 @@ add dst-address=0.0.0.0/0 gateway=172.16.255.254
 /ip service
 set telnet disabled=yes
 /system identity
-set name=SW1
+set name=LAN-H4sh1
