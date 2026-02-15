@@ -1,77 +1,66 @@
-################################################################################
-# CONFIGURATION LAN-H4sh1 - Switch Accès Zone 1
-# MikroTik CRS328-24P-4S+
-################################################################################
-
-# Nom du switch
-/system identity set name=LAN-H4sh1
-
-# Configuration IP de management
-/interface vlan add name=vlan999-mgmt interface=bridge vlan-id=999
-/ip address add address=172.16.255.12/24 interface=vlan999-mgmt comment="Management IP"
-
-# Route par défaut via le routeur
-/ip route add dst-address=0.0.0.0/0 gateway=172.16.255.254
-
-# DNS
-/ip dns set servers=172.16.255.254
-
-# Créer bridge
-/interface bridge add name=bridge vlan-filtering=yes comment="Main Bridge"
-
-# Port trunk vers SW1 (ether24)
-/interface bridge port add bridge=bridge interface=ether24 comment="Trunk to SW1"
-
-# Ports d'accès pour VMs/PCs
-# PC1 - VLAN 10 (LAN) sur ether1
-/interface bridge port add bridge=bridge interface=ether1 pvid=10 comment="PC1 - VLAN 10"
-
-# PC2 - VLAN 10 (LAN) sur ether2
-/interface bridge port add bridge=bridge interface=ether2 pvid=10 comment="PC2 - VLAN 10"
-
-# Serveur DMZ Interne (AD) - VLAN 201 sur ether3
-/interface bridge port add bridge=bridge interface=ether3 pvid=201 comment="AD Server - VLAN 201"
-
-# Serveur SOC (Wazuh) - VLAN 100 sur ether4
-/interface bridge port add bridge=bridge interface=ether4 pvid=100 comment="Wazuh - VLAN 100"
-
-# VLANs taggés sur le trunk (ether24)
-/interface bridge vlan add bridge=bridge vlan-ids=10 tagged=ether24 untagged=ether1,ether2 comment="VLAN 10 - LAN"
-/interface bridge vlan add bridge=bridge vlan-ids=20 tagged=ether24 comment="VLAN 20 - IT"
-/interface bridge vlan add bridge=bridge vlan-ids=30 tagged=ether24 comment="VLAN 30 - WiFi Emp"
-/interface bridge vlan add bridge=bridge vlan-ids=31 tagged=ether24 comment="VLAN 31 - WiFi Guest"
-/interface bridge vlan add bridge=bridge vlan-ids=100 tagged=ether24 untagged=ether4 comment="VLAN 100 - SOC"
-/interface bridge vlan add bridge=bridge vlan-ids=200 tagged=ether24 comment="VLAN 200 - DMZ-EXT"
-/interface bridge vlan add bridge=bridge vlan-ids=201 tagged=ether24 untagged=ether3 comment="VLAN 201 - DMZ-INT"
-/interface bridge vlan add bridge=bridge vlan-ids=999 tagged=ether24 comment="VLAN 999 - MGMT"
-
-# Protection BPDU
-/interface bridge port set [find bridge=bridge] bpdu-guard=yes
-
-# Limiter le nombre de MAC addresses par port (optionnel)
-/interface bridge port set [find interface=ether1] learn=yes
-/interface bridge port set [find interface=ether2] learn=yes
-
-# Services
-/ip service set telnet disabled=yes
-/ip service set ssh disabled=no
-/ip service set winbox disabled=no
-
-# Créer utilisateur
-/user add name=admin-sw2 password=SecureP@ssw0rd! group=full
-
-################################################################################
-# VÉRIFICATIONS
-################################################################################
-
-# Vérifier le bridge et les VLANs
-# /interface bridge print
-# /interface bridge port print
-# /interface bridge vlan print
-
-# Vérifier la table MAC
-# /interface bridge host print
-
-# Tester connectivité
-# ping 172.16.255.254
-# ping 192.168.1.200
+/interface bridge
+add comment="Main Bridge" name=bridge vlan-filtering=yes
+/interface ethernet
+set [ find default-name=ether1 ] disable-running-check=no
+set [ find default-name=ether2 ] disable-running-check=no
+set [ find default-name=ether3 ] disable-running-check=no
+set [ find default-name=ether4 ] disable-running-check=no
+set [ find default-name=ether5 ] disable-running-check=no
+set [ find default-name=ether6 ] disable-running-check=no
+set [ find default-name=ether7 ] disable-running-check=no
+set [ find default-name=ether8 ] disable-running-check=no
+set [ find default-name=ether9 ] disable-running-check=no
+set [ find default-name=ether10 ] disable-running-check=no
+set [ find default-name=ether11 ] disable-running-check=no
+set [ find default-name=ether12 ] disable-running-check=no
+set [ find default-name=ether13 ] disable-running-check=no
+set [ find default-name=ether14 ] disable-running-check=no
+set [ find default-name=ether15 ] disable-running-check=no
+set [ find default-name=ether16 ] disable-running-check=no
+set [ find default-name=ether17 ] disable-running-check=no
+set [ find default-name=ether18 ] disable-running-check=no
+set [ find default-name=ether19 ] disable-running-check=no
+set [ find default-name=ether20 ] disable-running-check=no
+set [ find default-name=ether21 ] disable-running-check=no
+set [ find default-name=ether22 ] disable-running-check=no
+set [ find default-name=ether23 ] disable-running-check=no
+set [ find default-name=ether24 ] disable-running-check=no
+set [ find default-name=ether25 ] disable-running-check=no
+set [ find default-name=ether26 ] disable-running-check=no
+set [ find default-name=ether27 ] disable-running-check=no
+set [ find default-name=ether28 ] disable-running-check=no
+/interface vlan
+add interface=bridge name=vlan999-mgmt vlan-id=999
+/disk
+set slot1 slot=slot1
+set slot2 slot=slot2
+/interface wireless security-profiles
+set [ find default=yes ] supplicant-identity=MikroTik
+/port
+set 0 name=serial0
+/interface bridge port
+add bpdu-guard=yes bridge=bridge comment="To RouterH4sh" interface=ether1
+add bridge=bridge comment="To LAN-H4sh1" interface=ether2
+add bridge=bridge comment="To LAN-H4sh2" interface=ether3
+/interface bridge vlan
+add bridge=bridge comment="VLAN 10 - LAN" tagged=ether1,ether2,ether3 vlan-ids=10
+add bridge=bridge comment="VLAN 20 - IT" tagged=ether1,ether2,ether3 vlan-ids=20
+add bridge=bridge comment="VLAN 30 - WiFi Emp" tagged=ether1,ether2,ether3 vlan-ids=30
+add bridge=bridge comment="VLAN 31 - WiFi Guest" tagged=ether1,ether2,ether3 vlan-ids=31
+add bridge=bridge comment="VLAN 100 - SOC" tagged=ether1,ether2,ether3 vlan-ids=100
+add bridge=bridge comment="VLAN 200 - DMZ-EXT" tagged=ether1,ether2,ether3 vlan-ids=200
+add bridge=bridge comment="VLAN 201 - DMZ-INT" tagged=ether1,ether2,ether3 vlan-ids=201
+add bridge=bridge comment="VLAN 999 - MGMT" tagged=bridge,ether1,ether2,ether3 vlan-ids=999
+/ip address
+add address=172.16.255.11/24 interface=vlan999-mgmt network=172.16.255.0
+/ip dhcp-client
+# DHCP client can not run on slave or passthrough interface!
+add interface=ether1
+/ip dns
+set servers=172.16.255.254
+/ip route
+add dst-address=0.0.0.0/0 gateway=172.16.255.254
+/ip service
+set telnet disabled=yes
+/system identity
+set name=SW1
