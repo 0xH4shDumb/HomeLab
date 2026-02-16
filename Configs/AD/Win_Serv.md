@@ -32,10 +32,5 @@ L'objectif est de déployer un réseau sécurisé, automatisé et résilient, re
 * Configuration régionale (Clavier AZERTY forcé sur l'OU France).
 * Restrictions de sécurité.
 
-## 🛠️ Installation & Usage
-1.  Cloner le repo.
-2.  Importer les configurations Cisco dans Packet Tracer/GNS3.
-3.  Exécuter `Import-Users.ps1` sur le DC pour peupler l'AD.
-
 ---
 *Projet réalisé par Théo TITEUX dans le cadre d'un Portfolio DevOps/SysAdmin.*
