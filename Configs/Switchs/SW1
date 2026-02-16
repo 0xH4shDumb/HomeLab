@@ -1,3 +1,7 @@
+
+# feb/16/2026 23:43:32 by RouterOS 7.8
+# software id =
+#
 /interface bridge
 add comment="Main Bridge" name=bridge vlan-filtering=yes
 /interface ethernet
@@ -34,6 +38,22 @@ add interface=bridge name=vlan999-mgmt vlan-id=999
 /disk
 set slot1 slot=slot1
 set slot2 slot=slot2
+set slot3 slot=slot3
+set slot4 slot=slot4
+set slot5 slot=slot5
+set slot6 slot=slot6
+set slot7 slot=slot7
+set slot8 slot=slot8
+set slot9 slot=slot9
+set slot10 slot=slot10
+set slot11 slot=slot11
+set slot12 slot=slot12
+set slot13 slot=slot13
+set slot14 slot=slot14
+set slot15 slot=slot15
+set slot16 slot=slot16
+set slot17 slot=slot17
+set slot18 slot=slot18
 /interface wireless security-profiles
 set [ find default=yes ] supplicant-identity=MikroTik
 /port
