@@ -21,7 +21,6 @@ ForEach ($User in $Users) {
     }
 
     # 2. Attribution des droits NTFS (L'utilisateur devient propriétaire + Contrôle Total)
-    # On utilise icacls qui est très robuste pour ça
     $Null = icacls $DossierUserLocal /grant "H4SH\$Login`:(OI)(CI)F" /T /Q
     Write-Host " [Droits OK]" -ForegroundColor Green -NoNewline
 
@@ -38,4 +37,4 @@ ForEach ($User in $Users) {
     }
 }
 
-Write-Host "--- TERMINE ! Vérifie ton dossier C:\UTILISATEURS ---" -ForegroundColor Magenta
+Write-Host "--- TERMINE ! Vérifier le dossier C:\UTILISATEURS ---" -ForegroundColor Magenta
