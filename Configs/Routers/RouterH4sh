@@ -1,4 +1,4 @@
-# feb/15/2026 02:13:36 by RouterOS 7.8
+# feb/17/2026 00:42:01 by RouterOS 7.8
 # software id =
 #
 /interface ethernet
@@ -25,6 +25,22 @@ add interface=trunk-to-sw1 name=vlan999-mgmt vlan-id=999
 /disk
 set slot1 slot=slot1
 set slot2 slot=slot2
+set slot3 slot=slot3
+set slot4 slot=slot4
+set slot5 slot=slot5
+set slot6 slot=slot6
+set slot7 slot=slot7
+set slot8 slot=slot8
+set slot9 slot=slot9
+set slot10 slot=slot10
+set slot11 slot=slot11
+set slot12 slot=slot12
+set slot13 slot=slot13
+set slot14 slot=slot14
+set slot15 slot=slot15
+set slot16 slot=slot16
+set slot17 slot=slot17
+set slot18 slot=slot18
 /interface wireless security-profiles
 set [ find default=yes ] supplicant-identity=MikroTik
 /ip pool
@@ -52,9 +68,9 @@ add address=172.16.255.254/24 comment="Gateway VLAN 999 - Management" interface=
 /ip dhcp-client
 add interface=ether1
 /ip dhcp-server network
-add address=172.16.10.0/24 comment="DHCP VLAN 10" dns-server=172.16.201.10,8.8.8.8 gateway=172.16.10.254
-add address=172.16.20.0/24 comment="DHCP VLAN 20" dns-server=172.16.201.10,8.8.8.8 gateway=172.16.20.254
-add address=172.16.30.0/24 comment="DHCP VLAN 30" dns-server=172.16.201.10,8.8.8.8 gateway=172.16.30.254
+add address=172.16.10.0/24 comment="DHCP VLAN 10" dns-server=172.16.201.10,1.1.1.1 gateway=172.16.10.254
+add address=172.16.20.0/24 comment="DHCP VLAN 20" dns-server=172.16.201.10,1.1.1.1 gateway=172.16.20.254
+add address=172.16.30.0/24 comment="DHCP VLAN 30" dns-server=172.16.201.10,1.1.1.1 gateway=172.16.30.254
 add address=172.16.31.0/24 comment="DHCP VLAN 31" dns-server=8.8.8.8,1.1.1.1 gateway=172.16.31.254
 /ip dns
 set allow-remote-requests=yes servers=8.8.8.8,8.8.4.4
@@ -64,6 +80,8 @@ add address=172.16.100.10 comment="Wazuh Server" name=wazuh.lab.local
 add address=172.16.100.20 comment="Splunk Server" name=splunk.lab.local
 add address=172.16.200.10 comment="Web Server DMZ" name=web.lab.local
 /ip firewall filter
+add action=accept chain=forward comment="TEMP: Autorisation totale pour jonction AD" in-interface=vlan10-lan \
+    out-interface=vlan201-dmz-int
 add action=drop chain=input comment="Drop port scanners" src-address-list=port-scanners
 add action=accept chain=input comment="Accept established/related" connection-state=established,related
 add action=accept chain=input comment="Allow from Management VLAN" src-address=172.16.255.0/24
@@ -77,24 +95,33 @@ add action=drop chain=input comment="Drop all other input"
 add action=accept chain=forward comment="Accept established/related" connection-state=established,related
 add action=log chain=forward comment="Log invalid" connection-state=invalid log-prefix="INVALID: "
 add action=drop chain=forward comment="Drop invalid" connection-state=invalid
-add action=accept chain=forward comment="Internet to DMZ-EXT Web" dst-port=80,443 in-interface=ether1 out-interface=vlan200-dmz-ext protocol=tcp
-add action=accept chain=forward comment="Internet to DMZ-EXT SSH" dst-port=22 in-interface=ether1 out-interface=vlan200-dmz-ext protocol=tcp
+add action=accept chain=forward comment="Internet to DMZ-EXT Web" dst-port=80,443 in-interface=ether1 out-interface=\
+    vlan200-dmz-ext protocol=tcp
+add action=accept chain=forward comment="Internet to DMZ-EXT SSH" dst-port=22 in-interface=ether1 out-interface=\
+    vlan200-dmz-ext protocol=tcp
 add action=accept chain=forward comment="DMZ-EXT to Internet" in-interface=vlan200-dmz-ext out-interface=ether1
-add action=accept chain=forward comment="DMZ-EXT to DMZ-INT (controlled)" dst-port=445,3389,1433 in-interface=vlan200-dmz-ext out-interface=vlan201-dmz-int protocol=tcp
-add action=accept chain=forward comment="DMZ-EXT to Wazuh" dst-address=172.16.100.10 dst-port=1514,1515 in-interface=vlan200-dmz-ext out-interface=vlan100-soc protocol=tcp
+add action=accept chain=forward comment="DMZ-EXT to DMZ-INT (controlled)" dst-port=445,3389,1433 in-interface=\
+    vlan200-dmz-ext out-interface=vlan201-dmz-int protocol=tcp
+add action=accept chain=forward comment="DMZ-EXT to Wazuh" dst-address=172.16.100.10 dst-port=1514,1515 in-interface=\
+    vlan200-dmz-ext out-interface=vlan100-soc protocol=tcp
 add action=drop chain=forward comment="Block DMZ-EXT to LAN" in-interface=vlan200-dmz-ext out-interface=vlan10-lan
 add action=drop chain=forward comment="Block DMZ-EXT to IT" in-interface=vlan200-dmz-ext out-interface=vlan20-it
 add action=drop chain=forward comment="Block DMZ-EXT to WiFi" in-interface=vlan200-dmz-ext out-interface=vlan30-wifi
 add action=drop chain=forward comment="Block DMZ-EXT to Guest" in-interface=vlan200-dmz-ext out-interface=vlan31-guest
 add action=accept chain=forward comment="IT to DMZ-INT full access" in-interface=vlan20-it out-interface=vlan201-dmz-int
-add action=accept chain=forward comment="LAN to DMZ-INT (AD services)" dst-port=88,135,139,389,445,464,636,3268,3269,3389 in-interface=vlan10-lan out-interface=vlan201-dmz-int protocol=tcp
-add action=accept chain=forward comment="WiFi to DMZ-INT (files/RDP)" dst-port=445,3389 in-interface=vlan30-wifi out-interface=vlan201-dmz-int protocol=tcp
+add action=accept chain=forward comment="LAN to DMZ-INT (AD services)" dst-port=88,135,139,389,445,464,636,3268,3269,3389 \
+    in-interface=vlan10-lan out-interface=vlan201-dmz-int protocol=tcp
+add action=accept chain=forward comment="WiFi to DMZ-INT (files/RDP)" dst-port=445,3389 in-interface=vlan30-wifi \
+    out-interface=vlan201-dmz-int protocol=tcp
 add action=accept chain=forward comment="DMZ-INT to Internet" in-interface=vlan201-dmz-int out-interface=ether1
-add action=accept chain=forward comment="DMZ-INT to Wazuh" dst-address=172.16.100.10 dst-port=1514,1515 in-interface=vlan201-dmz-int out-interface=vlan100-soc protocol=tcp
-add action=log chain=forward comment="Log DMZ-INT to LAN" in-interface=vlan201-dmz-int log-prefix="DMZ-INT-to-LAN-BLOCK: " out-interface=vlan10-lan
+add action=accept chain=forward comment="DMZ-INT to Wazuh" dst-address=172.16.100.10 dst-port=1514,1515 in-interface=\
+    vlan201-dmz-int out-interface=vlan100-soc protocol=tcp
+add action=log chain=forward comment="Log DMZ-INT to LAN" in-interface=vlan201-dmz-int log-prefix=\
+    "DMZ-INT-to-LAN-BLOCK: " out-interface=vlan10-lan
 add action=drop chain=forward comment="Block DMZ-INT to LAN" in-interface=vlan201-dmz-int out-interface=vlan10-lan
 add action=accept chain=forward comment="LAN to Internet" in-interface=vlan10-lan out-interface=ether1
-add action=accept chain=forward comment="LAN to Wazuh" dst-address=172.16.100.10 dst-port=1514,1515 in-interface=vlan10-lan out-interface=vlan100-soc protocol=tcp
+add action=accept chain=forward comment="LAN to Wazuh" dst-address=172.16.100.10 dst-port=1514,1515 in-interface=\
+    vlan10-lan out-interface=vlan100-soc protocol=tcp
 add action=drop chain=forward comment="Block LAN to DMZ-EXT" in-interface=vlan10-lan out-interface=vlan200-dmz-ext
 add action=drop chain=forward comment="Block LAN to IT" in-interface=vlan10-lan out-interface=vlan20-it
 add action=accept chain=forward comment="IT full access to all VLANs" in-interface=vlan20-it
@@ -110,23 +137,126 @@ add action=accept chain=forward comment="SOC can monitor all VLANs" in-interface
 add action=drop chain=forward comment="Block all other traffic to SOC" out-interface=vlan100-soc
 add action=log chain=forward comment="Log all other forwarded traffic" log-prefix="FORWARD-DROP: "
 add action=drop chain=forward comment="Drop all other forwarded traffic"
-add action=jump chain=forward comment="SYN Flood protection" connection-state=new jump-target=syn-flood protocol=tcp tcp-flags=syn
+add action=jump chain=forward comment="SYN Flood protection" connection-state=new jump-target=syn-flood protocol=tcp \
+    tcp-flags=syn
 add action=accept chain=syn-flood comment="Accept SYN under limit" limit=25,5:packet protocol=tcp tcp-flags=syn
 add action=log chain=syn-flood comment="Log SYN flood" log-prefix="SYN-FLOOD: "
 add action=drop chain=syn-flood comment="Drop SYN flood"
-add action=add-src-to-address-list address-list=port-scanners address-list-timeout=2w chain=input comment="Port scanners to list" protocol=tcp psd=21,3s,3,1
-add action=add-src-to-address-list address-list=port-scanners address-list-timeout=2w chain=input comment="NMAP FIN Stealth scan" protocol=tcp tcp-flags=fin,!syn,!rst,!psh,!ack,!urg
-add action=add-src-to-address-list address-list=port-scanners address-list-timeout=2w chain=input comment="SYN/FIN scan" protocol=tcp tcp-flags=fin,syn
-add action=add-src-to-address-list address-list=port-scanners address-list-timeout=2w chain=input comment="SYN/RST scan" protocol=tcp tcp-flags=syn,rst
-add action=add-src-to-address-list address-list=port-scanners address-list-timeout=2w chain=input comment="FIN/PSH/URG scan" protocol=tcp tcp-flags=fin,psh,urg,!syn,!rst,!ack
-add action=add-src-to-address-list address-list=port-scanners address-list-timeout=2w chain=input comment="ALL/ALL scan" protocol=tcp tcp-flags=fin,syn,rst,psh,ack,urg
-add action=add-src-to-address-list address-list=port-scanners address-list-timeout=2w chain=input comment="NMAP NULL scan" protocol=tcp tcp-flags=!fin,!syn,!rst,!psh,!ack,!urg
+add action=add-src-to-address-list address-list=port-scanners address-list-timeout=2w chain=input comment=\
+    "Port scanners to list" protocol=tcp psd=21,3s,3,1
+add action=add-src-to-address-list address-list=port-scanners address-list-timeout=2w chain=input comment=\
+    "NMAP FIN Stealth scan" protocol=tcp tcp-flags=fin,!syn,!rst,!psh,!ack,!urg
+add action=add-src-to-address-list address-list=port-scanners address-list-timeout=2w chain=input comment="SYN/FIN scan" \
+    protocol=tcp tcp-flags=fin,syn
+add action=add-src-to-address-list address-list=port-scanners address-list-timeout=2w chain=input comment="SYN/RST scan" \
+    protocol=tcp tcp-flags=syn,rst
+add action=add-src-to-address-list address-list=port-scanners address-list-timeout=2w chain=input comment=\
+    "FIN/PSH/URG scan" protocol=tcp tcp-flags=fin,psh,urg,!syn,!rst,!ack
+add action=add-src-to-address-list address-list=port-scanners address-list-timeout=2w chain=input comment="ALL/ALL scan" \
+    protocol=tcp tcp-flags=fin,syn,rst,psh,ack,urg
+add action=add-src-to-address-list address-list=port-scanners address-list-timeout=2w chain=input comment=\
+    "NMAP NULL scan" protocol=tcp tcp-flags=!fin,!syn,!rst,!psh,!ack,!urg
+add action=accept chain=forward comment="Allow LAN to AD Services" dst-port=88,135,139,389,445,464,636,3268,3269,3389 \
+    in-interface=vlan10-lan out-interface=vlan201-dmz-int protocol=tcp
+add action=accept chain=forward comment="Allow LAN to AD Services (UDP)" dst-port=53,88,123,389,464 in-interface=\
+    vlan10-lan out-interface=vlan201-dmz-int protocol=udp
+add action=accept chain=forward comment="ALLOW: LAN to AD Services (TCP)" dst-address=172.16.201.10 dst-port=\
+    88,135,389,445,464,636,3268,3269,49152-65535 in-interface=vlan10-lan protocol=tcp
+add action=accept chain=forward comment="ALLOW: LAN to AD Services (UDP)" dst-address=172.16.201.10 dst-port=\
+    53,88,123,389,464 in-interface=vlan10-lan protocol=udp
+add action=drop chain=forward comment="DROP: All other traffic to AD" in-interface=vlan10-lan out-interface=\
+    vlan201-dmz-int
+add action=drop chain=input comment="Drop port scanners" src-address-list=port-scanners
+add action=accept chain=input comment="Accept established/related" connection-state=established,related
+add action=accept chain=input comment="Allow from Management VLAN" src-address=172.16.255.0/24
+add action=accept chain=input comment="Allow from IT VLAN" src-address=172.16.20.0/24
+add action=accept chain=input comment="Accept ICMP" protocol=icmp
+add action=accept chain=input comment="SSH/Winbox from internal" dst-port=22,8291 protocol=tcp src-address=172.16.0.0/16
+add action=accept chain=input comment="Accept DNS" dst-port=53 protocol=udp
+add action=accept chain=input comment="Accept DHCP" dst-port=67,68 protocol=udp
+add action=log chain=input comment="Log dropped input" log-prefix="INPUT-DROP: "
+add action=drop chain=input comment="Drop all other input"
+add action=accept chain=forward comment="Accept established/related" connection-state=established,related
+add action=log chain=forward comment="Log invalid" connection-state=invalid log-prefix="INVALID: "
+add action=drop chain=forward comment="Drop invalid" connection-state=invalid
+add action=accept chain=forward comment="Internet to DMZ-EXT Web" dst-port=80,443 in-interface=ether1 out-interface=\
+    vlan200-dmz-ext protocol=tcp
+add action=accept chain=forward comment="Internet to DMZ-EXT SSH" dst-port=22 in-interface=ether1 out-interface=\
+    vlan200-dmz-ext protocol=tcp
+add action=accept chain=forward comment="DMZ-EXT to Internet" in-interface=vlan200-dmz-ext out-interface=ether1
+add action=accept chain=forward comment="DMZ-EXT to DMZ-INT (controlled)" dst-port=445,3389,1433 in-interface=\
+    vlan200-dmz-ext out-interface=vlan201-dmz-int protocol=tcp
+add action=accept chain=forward comment="DMZ-EXT to Wazuh" dst-address=172.16.100.10 dst-port=1514,1515 in-interface=\
+    vlan200-dmz-ext out-interface=vlan100-soc protocol=tcp
+add action=drop chain=forward comment="Block DMZ-EXT to LAN" in-interface=vlan200-dmz-ext out-interface=vlan10-lan
+add action=drop chain=forward comment="Block DMZ-EXT to IT" in-interface=vlan200-dmz-ext out-interface=vlan20-it
+add action=drop chain=forward comment="Block DMZ-EXT to WiFi" in-interface=vlan200-dmz-ext out-interface=vlan30-wifi
+add action=drop chain=forward comment="Block DMZ-EXT to Guest" in-interface=vlan200-dmz-ext out-interface=vlan31-guest
+add action=accept chain=forward comment="IT to DMZ-INT full access" in-interface=vlan20-it out-interface=vlan201-dmz-int
+add action=accept chain=forward comment="LAN to DMZ-INT (AD services)" dst-port=88,135,139,389,445,464,636,3268,3269,3389 \
+    in-interface=vlan10-lan out-interface=vlan201-dmz-int protocol=tcp
+add action=accept chain=forward comment="WiFi to DMZ-INT (files/RDP)" dst-port=445,3389 in-interface=vlan30-wifi \
+    out-interface=vlan201-dmz-int protocol=tcp
+add action=accept chain=forward comment="DMZ-INT to Internet" in-interface=vlan201-dmz-int out-interface=ether1
+add action=accept chain=forward comment="DMZ-INT to Wazuh" dst-address=172.16.100.10 dst-port=1514,1515 in-interface=\
+    vlan201-dmz-int out-interface=vlan100-soc protocol=tcp
+add action=log chain=forward comment="Log DMZ-INT to LAN" in-interface=vlan201-dmz-int log-prefix=\
+    "DMZ-INT-to-LAN-BLOCK: " out-interface=vlan10-lan
+add action=drop chain=forward comment="Block DMZ-INT to LAN" in-interface=vlan201-dmz-int out-interface=vlan10-lan
+add action=accept chain=forward comment="LAN to Internet" in-interface=vlan10-lan out-interface=ether1
+add action=accept chain=forward comment="LAN to Wazuh" dst-address=172.16.100.10 dst-port=1514,1515 in-interface=\
+    vlan10-lan out-interface=vlan100-soc protocol=tcp
+add action=drop chain=forward comment="Block LAN to DMZ-EXT" in-interface=vlan10-lan out-interface=vlan200-dmz-ext
+add action=drop chain=forward comment="Block LAN to IT" in-interface=vlan10-lan out-interface=vlan20-it
+add action=accept chain=forward comment="IT full access to all VLANs" in-interface=vlan20-it
+add action=accept chain=forward comment="WiFi to Internet" in-interface=vlan30-wifi out-interface=ether1
+add action=drop chain=forward comment="Block WiFi to LAN" in-interface=vlan30-wifi out-interface=vlan10-lan
+add action=drop chain=forward comment="Block WiFi to IT" in-interface=vlan30-wifi out-interface=vlan20-it
+add action=drop chain=forward comment="Block WiFi to DMZ-EXT" in-interface=vlan30-wifi out-interface=vlan200-dmz-ext
+add action=accept chain=forward comment="Guest WiFi to Internet ONLY" in-interface=vlan31-guest out-interface=ether1
+add action=log chain=forward comment="Log Guest WiFi blocked" in-interface=vlan31-guest log-prefix="GUEST-BLOCK: "
+add action=drop chain=forward comment="Block Guest WiFi to all internal VLANs" in-interface=vlan31-guest
+add action=accept chain=forward comment="SOC to Internet" in-interface=vlan100-soc out-interface=ether1
+add action=accept chain=forward comment="SOC can monitor all VLANs" in-interface=vlan100-soc
+add action=drop chain=forward comment="Block all other traffic to SOC" out-interface=vlan100-soc
+add action=log chain=forward comment="Log all other forwarded traffic" log-prefix="FORWARD-DROP: "
+add action=drop chain=forward comment="Drop all other forwarded traffic"
+add action=jump chain=forward comment="SYN Flood protection" connection-state=new jump-target=syn-flood protocol=tcp \
+    tcp-flags=syn
+add action=accept chain=syn-flood comment="Accept SYN under limit" limit=25,5:packet protocol=tcp tcp-flags=syn
+add action=log chain=syn-flood comment="Log SYN flood" log-prefix="SYN-FLOOD: "
+add action=drop chain=syn-flood comment="Drop SYN flood"
+add action=add-src-to-address-list address-list=port-scanners address-list-timeout=2w chain=input comment=\
+    "Port scanners to list" protocol=tcp psd=21,3s,3,1
+add action=add-src-to-address-list address-list=port-scanners address-list-timeout=2w chain=input comment=\
+    "NMAP FIN Stealth scan" protocol=tcp tcp-flags=fin,!syn,!rst,!psh,!ack,!urg
+add action=add-src-to-address-list address-list=port-scanners address-list-timeout=2w chain=input comment="SYN/FIN scan" \
+    protocol=tcp tcp-flags=fin,syn
+add action=add-src-to-address-list address-list=port-scanners address-list-timeout=2w chain=input comment="SYN/RST scan" \
+    protocol=tcp tcp-flags=syn,rst
+add action=add-src-to-address-list address-list=port-scanners address-list-timeout=2w chain=input comment=\
+    "FIN/PSH/URG scan" protocol=tcp tcp-flags=fin,psh,urg,!syn,!rst,!ack
+add action=add-src-to-address-list address-list=port-scanners address-list-timeout=2w chain=input comment="ALL/ALL scan" \
+    protocol=tcp tcp-flags=fin,syn,rst,psh,ack,urg
+add action=add-src-to-address-list address-list=port-scanners address-list-timeout=2w chain=input comment=\
+    "NMAP NULL scan" protocol=tcp tcp-flags=!fin,!syn,!rst,!psh,!ack,!urg
 /ip firewall nat
 add action=masquerade chain=srcnat comment="NAT vers Internet" out-interface=ether1
-add action=dst-nat chain=dstnat comment="HTTP to Web Server" dst-address=192.168.1.200 dst-port=80 protocol=tcp to-addresses=172.16.200.10 to-ports=80
-add action=dst-nat chain=dstnat comment="HTTPS to Web Server" dst-address=192.168.1.200 dst-port=443 protocol=tcp to-addresses=172.16.200.10 to-ports=443
-add action=dst-nat chain=dstnat comment="SSH to Web Server (port 2222)" dst-address=192.168.1.200 dst-port=2222 protocol=tcp to-addresses=172.16.200.10 to-ports=22
+add action=dst-nat chain=dstnat comment="HTTP to Web Server" dst-address=192.168.1.200 dst-port=80 protocol=tcp \
+    to-addresses=172.16.200.10 to-ports=80
+add action=dst-nat chain=dstnat comment="HTTPS to Web Server" dst-address=192.168.1.200 dst-port=443 protocol=tcp \
+    to-addresses=172.16.200.10 to-ports=443
+add action=dst-nat chain=dstnat comment="SSH to Web Server (port 2222)" dst-address=192.168.1.200 dst-port=2222 protocol=\
+    tcp to-addresses=172.16.200.10 to-ports=22
+add action=masquerade chain=srcnat comment="NAT vers Internet" out-interface=ether1
+add action=dst-nat chain=dstnat comment="HTTP to Web Server" dst-address=192.168.1.200 dst-port=80 protocol=tcp \
+    to-addresses=172.16.200.10 to-ports=80
+add action=dst-nat chain=dstnat comment="HTTPS to Web Server" dst-address=192.168.1.200 dst-port=443 protocol=tcp \
+    to-addresses=172.16.200.10 to-ports=443
+add action=dst-nat chain=dstnat comment="SSH to Web Server (port 2222)" dst-address=192.168.1.200 dst-port=2222 protocol=\
+    tcp to-addresses=172.16.200.10 to-ports=22
 /ip route
+add comment="Default route to Internet" dst-address=0.0.0.0/0 gateway=192.168.1.254
 add comment="Default route to Internet" dst-address=0.0.0.0/0 gateway=192.168.1.254
 /ip service
 set telnet disabled=yes
@@ -139,6 +269,9 @@ set time-zone-name=Europe/Paris
 /system identity
 set name=RouterH4sh
 /system logging
+add prefix="FW: " topics=firewall,info
+add topics=error
+add topics=warning
 add prefix="FW: " topics=firewall,info
 add topics=error
 add topics=warning
