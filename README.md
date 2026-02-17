@@ -345,10 +345,6 @@ Cette infrastructure permet de simuler :
 
 **0xH4shDumb**
 
-## 📄 Licence
-
-Ce projet est fourni à des fins éducatives uniquement.
-
 ---
 
 **⚠️ Avertissement** : Cette infrastructure est conçue pour un environnement de laboratoire. Ne pas utiliser en production sans audit de sécurité complet.
